@@ -20,6 +20,11 @@
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
-body { font-family: inherit; }
+body { font-family: inherit; 
+      background: #f8fafc;
+     color: #0f172a;}
+.shadow-soft {
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+}
 button, input, select { font: inherit; }
 button { cursor: pointer; }
