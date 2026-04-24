@@ -498,14 +498,16 @@ export default function LoyaltyCustomerStudio() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg)' }}>
-      <aside style={{ width: 274, background: '#ffffff', borderRight: '1px solid var(--border)', padding: 16, display: 'flex', flexDirection: 'column', gap: 18 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 10 }}>
-          <div style={{ width: 42, height: 42, borderRadius: 16, background: 'var(--primary)', color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 800 }}>G</div>
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 800 }}>Gemer Flow</div>
-            <div style={{ fontSize: 12, color: 'var(--muted)' }}>Loyalty & Customer Studio</div>
-          </div>
-        </div>
+      <aside className="hidden h-screen w-72 shrink-0 border-r border-slate-200 bg-white xl:flex xl:flex-col">
+       <div className="flex h-20 items-center gap-3 border-b border-slate-100 px-6">
+  <div className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-900 text-sm font-bold text-white">
+    G
+  </div>
+  <div>
+    <div className="text-sm font-semibold">Gemer Flow</div>
+    <div className="text-xs text-slate-500">Loyalty & Customer Studio</div>
+  </div>
+</div>
         <nav className="space-y-1 p-4 text-sm">
   {NAV.map((item) => {
     const active = activePage === item;
