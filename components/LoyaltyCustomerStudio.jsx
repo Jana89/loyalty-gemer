@@ -506,16 +506,24 @@ export default function LoyaltyCustomerStudio() {
             <div style={{ fontSize: 12, color: 'var(--muted)' }}>Loyalty & Customer Studio</div>
           </div>
         </div>
-        <nav style={{ display: 'grid', gap: 6 }}>
-          {NAV.map((item) => {
-            const active = activePage === item;
-            return (
-              <button key={item} onClick={() => setActivePage(item)} style={{ border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 16px', borderRadius: 18, background: active ? 'var(--primary)' : '#fff', color: active ? '#fff' : 'var(--text)', fontWeight: active ? 700 : 600, boxShadow: active ? '0 8px 20px rgba(15,23,42,.12)' : 'none' }}>
-                <span>{item}</span>
-              </button>
-            );
-          })}
-        </nav>
+        <nav className="space-y-1 p-4 text-sm">
+  {NAV.map((item) => {
+    const active = activePage === item;
+    return (
+      <button
+        key={item}
+        onClick={() => setActivePage(item)}
+        className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition ${
+          active
+            ? "bg-slate-900 text-white shadow-soft"
+            : "text-slate-600 hover:bg-slate-100"
+        }`}
+      >
+        <span>{item}</span>
+      </button>
+    );
+  })}
+</nav>
         <div style={{ marginTop: 'auto', background: 'var(--primary)', color: '#fff', borderRadius: 26, padding: 18 }}>
           <div style={{ fontWeight: 800 }}>Current product story</div>
           <div style={{ marginTop: 8, fontSize: 13, color: 'rgba(255,255,255,.78)', lineHeight: 1.5 }}>
