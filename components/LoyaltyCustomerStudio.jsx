@@ -120,8 +120,8 @@ const STORE = [
   { location: 'Kristiine', enrollments: 22, linkedProfiles: 20, missingLinks: 2 }
 ];
 
-function badgeStyle(kind) {
-  const styles = {
+function Badge({ children, tone = 'default' }) {
+  const tones = {
     Gold: { bg: '#fef3c7', color: '#b45309' },
     Silver: { bg: '#e2e8f0', color: '#475569' },
     Bronze: { bg: '#ffedd5', color: '#c2410c' },
@@ -129,13 +129,10 @@ function badgeStyle(kind) {
     'Refund pending': { bg: 'var(--warn-soft)', color: 'var(--warn)' },
     Active: { bg: 'var(--success-soft)', color: 'var(--success)' },
     Live: { bg: 'var(--success-soft)', color: 'var(--success)' },
-    Draft: { bg: 'var(--primary-soft)', color: 'var(--text)' }
+    Draft: { bg: 'var(--primary-soft)', color: 'var(--text)' },
+    default: { bg: 'var(--primary-soft)', color: 'var(--text)' }
   };
-  return styles[kind] || { bg: 'var(--info-soft)', color: 'var(--info)' };
-}
-
-function Badge({ children }) {
-  const style = badgeStyle(children);
+  const style = tones[children] || tones[tone] || tones.default;
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 10px', borderRadius: 999, background: style.bg, color: style.color, fontSize: 12, fontWeight: 700 }}>
       {children}
@@ -145,28 +142,25 @@ function Badge({ children }) {
 
 function Card({ title, right, children }) {
   return (
-    <section style={{ background: 'var(--panel)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--shadow)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 22px', borderBottom: '1px solid #f1f5f9' }}>
-        <div style={{ fontSize: 14, fontWeight: 700 }}>{title}</div>
+    <div className="card-shell">
+      <div className="card-head">
+        <div className="card-title">{title}</div>
         {right}
       </div>
-      <div style={{ padding: 22 }}>{children}</div>
-    </section>
+      <div className="card-body">{children}</div>
+    </div>
   );
 }
 
 function Kpi({ label, value, helper }) {
   return (
-    <div style={{ background: 'var(--panel)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: 20, boxShadow: 'var(--shadow)' }}>
-      <div style={{ color: 'var(--muted)', fontSize: 13 }}>{label}</div>
-      <div style={{ marginTop: 8, fontSize: 34, fontWeight: 800, letterSpacing: '-0.03em' }}>{value}</div>
-      <div style={{ marginTop: 8, color: 'var(--muted)', fontSize: 13 }}>{helper}</div>
+    <div className="kpi-card">
+      <div className="kpi-label">{label}</div>
+      <div className="kpi-value">{value}</div>
+      <div className="kpi-helper">{helper}</div>
     </div>
   );
 }
-
-const primaryButton = { border: 'none', background: 'var(--primary)', color: '#fff', padding: '12px 16px', borderRadius: 16, fontWeight: 700 };
-const secondaryButton = { border: '1px solid var(--border)', background: '#fff', color: 'var(--text)', padding: '12px 16px', borderRadius: 16, fontWeight: 700 };
 
 export default function LoyaltyCustomerStudio() {
   const [activePage, setActivePage] = useState('Overview');
@@ -183,21 +177,21 @@ export default function LoyaltyCustomerStudio() {
 
   function CustomerList() {
     return (
-      <div style={{ display: 'grid', gap: 14 }}>
+      <div className="stack-md">
         {filteredCustomers.map((c) => (
-          <button key={c.id} onClick={() => { setSelectedCustomerId(c.id); setActivePage('Customer 360'); }} style={{ textAlign: 'left', width: '100%', background: selectedCustomer?.id === c.id ? '#f8fafc' : '#fff', border: selectedCustomer?.id === c.id ? '1px solid #0f172a' : '1px solid var(--border)', borderRadius: 22, padding: 18 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'start' }}>
+          <button key={c.id} onClick={() => { setSelectedCustomerId(c.id); setActivePage('Customer 360'); }} className={`list-button ${selectedCustomer?.id === c.id ? 'selected' : ''}`}>
+            <div className="row-between-start gap-md">
               <div>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <div style={{ fontWeight: 800 }}>{c.name}</div>
+                <div className="row-wrap gap-sm">
+                  <div className="font-strong">{c.name}</div>
                   <Badge>{c.tier}</Badge>
                   <Badge>{c.status}</Badge>
                 </div>
-                <div style={{ marginTop: 8, fontSize: 14, color: 'var(--muted)' }}>{c.segment}</div>
+                <div className="muted mt-8">{c.segment}</div>
               </div>
-              <div style={{ fontSize: 12, color: 'var(--muted)' }}>{c.clv}</div>
+              <div className="muted small">{c.clv}</div>
             </div>
-            <div style={{ marginTop: 10, fontSize: 14 }}>{c.issue}</div>
+            <div className="mt-10">{c.issue}</div>
           </button>
         ))}
       </div>
@@ -206,36 +200,36 @@ export default function LoyaltyCustomerStudio() {
 
   function OverviewPage() {
     return (
-      <div style={{ display: 'grid', gap: 22 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 16 }}>
+      <div className="stack-lg">
+        <div className="grid-kpis">
           <Kpi label="Active loyalty members" value="18.4k" helper="Across online and retail" />
           <Kpi label="Service-aware segments" value="12" helper="Built from orders, refunds, and support signals" />
           <Kpi label="Operational journeys live" value="7" helper="Delay, refund, gift, VIP and more" />
           <Kpi label="Store-linked profiles" value="91%" helper="Retail enrollment matched to customer records" />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 22 }}>
+        <div className="grid-main-split">
           <Card title="Priority customer segments">
-            <div style={{ display: 'grid', gap: 12 }}>
+            <div className="stack-md">
               {SEGMENTS.map((s) => (
-                <div key={s.name} style={{ border: '1px solid var(--border)', borderRadius: 18, padding: 16 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-                    <div style={{ fontWeight: 700 }}>{s.name}</div>
-                    <div style={{ color: 'var(--muted)', fontSize: 13 }}>{s.size} customers</div>
+                <div key={s.name} className="panel-soft outlined">
+                  <div className="row-between gap-md">
+                    <div className="font-semibold">{s.name}</div>
+                    <div className="muted small">{s.size} customers</div>
                   </div>
-                  <div style={{ marginTop: 8, color: 'var(--muted)', fontSize: 14 }}>{s.logic}</div>
+                  <div className="muted mt-8">{s.logic}</div>
                 </div>
               ))}
             </div>
           </Card>
-          <Card title="Why this matters to the team">
-            <div style={{ display: 'grid', gap: 12 }}>
+          <Card title="How this helps the team">
+            <div className="stack-md">
               {[
                 'Support can see loyalty status, case history, and lifetime value in one customer view.',
-                'Journeys react to real events like delays, refunds, and missing gifts - not just marketing events.',
+                'Journeys react to real events like delays, refunds, and missing gifts — not just marketing events.',
                 'Store enrollment becomes part of the same customer record instead of a disconnected manual flow.',
                 'Compensation and goodwill can be targeted more precisely for high-value or high-risk customers.'
               ].map((text) => (
-                <div key={text} style={{ padding: 16, borderRadius: 18, background: 'var(--panel-soft)', fontSize: 14 }}>{text}</div>
+                <div key={text} className="panel-soft">{text}</div>
               ))}
             </div>
           </Card>
@@ -246,31 +240,31 @@ export default function LoyaltyCustomerStudio() {
 
   function CustomersPage() {
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 22 }}>
+      <div className="grid-detail-split">
         <Card title="Customer list"><CustomerList /></Card>
         <Card title="Customer summary">
-          <div style={{ display: 'grid', gap: 16 }}>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}><Badge>{selectedCustomer.tier}</Badge><Badge>{selectedCustomer.status}</Badge></div>
+          <div className="stack-lg">
+            <div className="row-wrap gap-sm"><Badge>{selectedCustomer.tier}</Badge><Badge>{selectedCustomer.status}</Badge></div>
             <div>
-              <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em' }}>{selectedCustomer.name}</div>
-              <div style={{ marginTop: 6, color: 'var(--muted)', fontSize: 14 }}>{selectedCustomer.email}</div>
+              <div className="hero-name">{selectedCustomer.name}</div>
+              <div className="muted mt-6">{selectedCustomer.email}</div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: 12 }}>
+            <div className="grid-mini-cards">
               {[
                 ['Lifetime value', selectedCustomer.clv],
                 ['Points', String(selectedCustomer.points)],
                 ['Preferred channel', selectedCustomer.channel],
                 ['Last order', selectedCustomer.lastOrder]
               ].map(([label, value]) => (
-                <div key={label} style={{ background: 'var(--panel-soft)', borderRadius: 18, padding: 16 }}>
-                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>{label}</div>
-                  <div style={{ marginTop: 8, fontWeight: 700 }}>{value}</div>
+                <div key={label} className="panel-soft">
+                  <div className="mini-label">{label}</div>
+                  <div className="mini-value">{value}</div>
                 </div>
               ))}
             </div>
-            <div style={{ padding: 18, borderRadius: 20, background: '#fff7ed', border: '1px solid #fed7aa' }}>
-              <div style={{ fontWeight: 700, color: '#9a3412' }}>Current context</div>
-              <div style={{ marginTop: 8, color: '#9a3412', fontSize: 14 }}>{selectedCustomer.issue}</div>
+            <div className="warn-box">
+              <div className="warn-title">Current context</div>
+              <div className="warn-text">{selectedCustomer.issue}</div>
             </div>
           </div>
         </Card>
@@ -280,10 +274,10 @@ export default function LoyaltyCustomerStudio() {
 
   function Customer360Page() {
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 22 }}>
-        <Card title={`Customer 360 - ${selectedCustomer.name}`} right={<Badge>{selectedCustomer.tier}</Badge>}>
-          <div style={{ display: 'grid', gap: 16 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: 12 }}>
+      <div className="grid-detail-split">
+        <Card title={`Customer 360 · ${selectedCustomer.name}`} right={<Badge>{selectedCustomer.tier}</Badge>}>
+          <div className="stack-lg">
+            <div className="grid-mini-cards">
               {[
                 ['Segment', selectedCustomer.segment],
                 ['Case count', String(selectedCustomer.cases)],
@@ -292,31 +286,31 @@ export default function LoyaltyCustomerStudio() {
                 ['Preferred channel', selectedCustomer.channel],
                 ['Journey', selectedCustomer.journey]
               ].map(([label, value]) => (
-                <div key={label} style={{ background: 'var(--panel-soft)', borderRadius: 18, padding: 16 }}>
-                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>{label}</div>
-                  <div style={{ marginTop: 8, fontWeight: 700 }}>{value}</div>
+                <div key={label} className="panel-soft">
+                  <div className="mini-label">{label}</div>
+                  <div className="mini-value">{value}</div>
                 </div>
               ))}
             </div>
             <div>
-              <div style={{ fontWeight: 700, marginBottom: 12 }}>Event timeline</div>
-              <div style={{ display: 'grid', gap: 10 }}>
+              <div className="section-label">Event timeline</div>
+              <div className="stack-sm mt-12">
                 {selectedCustomer.timeline.map((step) => (
-                  <div key={step} style={{ border: '1px solid var(--border)', borderRadius: 18, padding: 14, fontSize: 14 }}>{step}</div>
+                  <div key={step} className="timeline-row">{step}</div>
                 ))}
               </div>
             </div>
           </div>
         </Card>
         <Card title="Next best actions">
-          <div style={{ display: 'grid', gap: 12 }}>
+          <div className="stack-md">
             {[
               'Issue a service recovery reward or points based on case severity.',
               'Use preferred channel when the next order issue occurs.',
               'Escalate automatically if another delay happens within 30 days.',
               'Use previous substitute acceptance pattern when offering replacement products.'
             ].map((text) => (
-              <div key={text} style={{ padding: 16, borderRadius: 18, background: 'var(--panel-soft)', fontSize: 14 }}>{text}</div>
+              <div key={text} className="panel-soft">{text}</div>
             ))}
           </div>
         </Card>
@@ -327,14 +321,14 @@ export default function LoyaltyCustomerStudio() {
   function SegmentsPage() {
     return (
       <Card title="Service-aware segments">
-        <div style={{ display: 'grid', gap: 12 }}>
+        <div className="stack-md">
           {SEGMENTS.map((s) => (
-            <div key={s.name} style={{ border: '1px solid var(--border)', borderRadius: 20, padding: 18 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-                <div style={{ fontWeight: 800 }}>{s.name}</div>
-                <div style={{ color: 'var(--muted)', fontSize: 13 }}>{s.size} customers</div>
+            <div key={s.name} className="outlined panel-softless">
+              <div className="row-between gap-md">
+                <div className="font-strong">{s.name}</div>
+                <div className="muted small">{s.size} customers</div>
               </div>
-              <div style={{ marginTop: 8, color: 'var(--muted)', fontSize: 14 }}>{s.logic}</div>
+              <div className="muted mt-8">{s.logic}</div>
             </div>
           ))}
         </div>
@@ -345,16 +339,16 @@ export default function LoyaltyCustomerStudio() {
   function JourneysPage() {
     return (
       <Card title="Operational journeys">
-        <div style={{ display: 'grid', gap: 12 }}>
+        <div className="stack-md">
           {JOURNEYS.map((j) => (
-            <div key={j.name} style={{ border: '1px solid var(--border)', borderRadius: 20, padding: 18 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'start' }}>
+            <div key={j.name} className="outlined panel-softless">
+              <div className="row-between-start gap-md">
                 <div>
-                  <div style={{ fontWeight: 800 }}>{j.name}</div>
-                  <div style={{ marginTop: 8, fontSize: 14, color: 'var(--muted)' }}>Trigger: {j.trigger}</div>
-                  <div style={{ marginTop: 6, fontSize: 14 }}>Action: {j.action}</div>
+                  <div className="font-strong">{j.name}</div>
+                  <div className="muted mt-8">Trigger: {j.trigger}</div>
+                  <div className="mt-6">Action: {j.action}</div>
                 </div>
-                <div style={{ color: 'var(--muted)', fontSize: 13 }}>{j.goal}</div>
+                <div className="muted small">{j.goal}</div>
               </div>
             </div>
           ))}
@@ -365,27 +359,27 @@ export default function LoyaltyCustomerStudio() {
 
   function LoyaltyPage() {
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 22 }}>
+      <div className="grid-detail-split">
         <Card title="Loyalty system">
-          <div style={{ display: 'grid', gap: 12 }}>
+          <div className="stack-md">
             {[
               'Points earned on purchases and selected service recovery events',
               'Tier visibility for support and customer operations',
               'Retail enrollment linked to the same profile as online activity',
               'Goodwill and compensation rules can be tied to value and case type'
             ].map((text) => (
-              <div key={text} style={{ padding: 16, borderRadius: 18, background: 'var(--panel-soft)', fontSize: 14 }}>{text}</div>
+              <div key={text} className="panel-soft">{text}</div>
             ))}
           </div>
         </Card>
         <Card title="Support-facing loyalty value">
-          <div style={{ display: 'grid', gap: 12 }}>
+          <div className="stack-md">
             {[
               'Agents can see whether the customer is worth escalating or protecting.',
               'Points and benefits can be used as compensation after service failures.',
               'Loyalty status gives context for exceptions and goodwill decisions.'
             ].map((text) => (
-              <div key={text} style={{ padding: 16, borderRadius: 18, background: 'var(--panel-soft)', fontSize: 14 }}>{text}</div>
+              <div key={text} className="panel-soft">{text}</div>
             ))}
           </div>
         </Card>
@@ -396,12 +390,12 @@ export default function LoyaltyCustomerStudio() {
   function RewardsPage() {
     return (
       <Card title="Rewards and service recovery">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 14 }}>
+        <div className="grid-rewards">
           {REWARDS.map((r) => (
-            <div key={r.name} style={{ border: '1px solid var(--border)', borderRadius: 20, padding: 18 }}>
-              <div style={{ fontWeight: 800 }}>{r.name}</div>
-              <div style={{ marginTop: 8, color: 'var(--muted)', fontSize: 14 }}>{r.type}</div>
-              <div style={{ marginTop: 14, fontSize: 24, fontWeight: 800 }}>{r.cost === 0 ? 'Dynamic' : `${r.cost} pts`}</div>
+            <div key={r.name} className="outlined panel-softless">
+              <div className="font-strong">{r.name}</div>
+              <div className="muted mt-8">{r.type}</div>
+              <div className="reward-value">{r.cost === 0 ? 'Dynamic' : `${r.cost} pts`}</div>
             </div>
           ))}
         </div>
@@ -412,14 +406,14 @@ export default function LoyaltyCustomerStudio() {
   function CampaignsPage() {
     return (
       <Card title="Campaigns">
-        <div style={{ display: 'grid', gap: 12 }}>
+        <div className="stack-md">
           {CAMPAIGNS.map((c) => (
-            <div key={c.name} style={{ border: '1px solid var(--border)', borderRadius: 20, padding: 18 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'start' }}>
+            <div key={c.name} className="outlined panel-softless">
+              <div className="row-between-start gap-md">
                 <div>
-                  <div style={{ fontWeight: 800 }}>{c.name}</div>
-                  <div style={{ marginTop: 8, color: 'var(--muted)', fontSize: 14 }}>Audience: {c.audience}</div>
-                  <div style={{ marginTop: 6, fontSize: 14 }}>Channel: {c.channel}</div>
+                  <div className="font-strong">{c.name}</div>
+                  <div className="muted mt-8">Audience: {c.audience}</div>
+                  <div className="mt-6">Channel: {c.channel}</div>
                 </div>
                 <Badge>{c.status}</Badge>
               </div>
@@ -433,14 +427,14 @@ export default function LoyaltyCustomerStudio() {
   function StorePage() {
     return (
       <Card title="Store enrollment and profile linking">
-        <div style={{ display: 'grid', gap: 12 }}>
+        <div className="stack-md">
           {STORE.map((s) => (
-            <div key={s.location} style={{ border: '1px solid var(--border)', borderRadius: 20, padding: 18 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-                <div style={{ fontWeight: 800 }}>{s.location}</div>
-                <div style={{ color: 'var(--muted)', fontSize: 13 }}>{s.enrollments} enrollments</div>
+            <div key={s.location} className="outlined panel-softless">
+              <div className="row-between gap-md">
+                <div className="font-strong">{s.location}</div>
+                <div className="muted small">{s.enrollments} enrollments</div>
               </div>
-              <div style={{ marginTop: 8, color: 'var(--muted)', fontSize: 14 }}>Linked profiles: {s.linkedProfiles} - Missing links: {s.missingLinks}</div>
+              <div className="muted mt-8">Linked profiles: {s.linkedProfiles} · Missing links: {s.missingLinks}</div>
             </div>
           ))}
         </div>
@@ -450,9 +444,9 @@ export default function LoyaltyCustomerStudio() {
 
   function SettingsPage() {
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 22 }}>
+      <div className="grid-detail-split">
         <Card title="Connected systems">
-          <div style={{ display: 'grid', gap: 12 }}>
+          <div className="stack-md">
             {[
               'Magento customer and order feed',
               'Directo refund and case context',
@@ -460,19 +454,19 @@ export default function LoyaltyCustomerStudio() {
               'Email and SMS provider integration',
               'Support case and campaign context feed'
             ].map((text) => (
-              <div key={text} style={{ padding: 16, borderRadius: 18, background: 'var(--panel-soft)', fontSize: 14 }}>{text}</div>
+              <div key={text} className="panel-soft">{text}</div>
             ))}
           </div>
         </Card>
         <Card title="Rules and controls">
-          <div style={{ display: 'grid', gap: 12 }}>
+          <div className="stack-md">
             {[
               'Delay recovery points threshold',
               'VIP escalation conditions',
               'Refund risk segmentation rules',
               'Preferred channel logic based on response history'
             ].map((text) => (
-              <div key={text} style={{ padding: 16, borderRadius: 18, background: 'var(--panel-soft)', fontSize: 14 }}>{text}</div>
+              <div key={text} className="panel-soft">{text}</div>
             ))}
           </div>
         </Card>
@@ -497,59 +491,55 @@ export default function LoyaltyCustomerStudio() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg)' }}>
-      <aside className="hidden h-screen w-72 shrink-0 border-r border-slate-200 bg-white xl:flex xl:flex-col">
-       <div className="flex h-20 items-center gap-3 border-b border-slate-100 px-6">
-  <div className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-900 text-sm font-bold text-white">
-    G
-  </div>
-  <div>
-    <div className="text-sm font-semibold">Gemer Flow</div>
-    <div className="text-xs text-slate-500">Loyalty & Customer Studio</div>
-  </div>
-</div>
-        <nav className="space-y-1 p-4 text-sm">
-  {NAV.map((item) => {
-    const active = activePage === item;
-    return (
-      <button
-        key={item}
-        onClick={() => setActivePage(item)}
-        className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition ${
-          active
-            ? "bg-slate-900 text-white shadow-soft"
-            : "text-slate-600 hover:bg-slate-100"
-        }`}
-      >
-        <span>{item}</span>
-      </button>
-    );
-  })}
-</nav>
-        <div style={{ marginTop: 'auto', background: 'var(--primary)', color: '#fff', borderRadius: 26, padding: 18 }}>
-          <div style={{ fontWeight: 800 }}>Current product story</div>
-          <div style={{ marginTop: 8, fontSize: 13, color: 'rgba(255,255,255,.78)', lineHeight: 1.5 }}>
-            Loyalty, service recovery, and customer context in one system for support, marketing, and retail teams.
-          </div>
-          <button onClick={() => setActivePage('Overview')} style={{ marginTop: 14, border: 'none', background: '#fff', color: 'var(--primary)', padding: '10px 14px', borderRadius: 14, fontWeight: 700 }}>Open overview</button>
-        </div>
-      </aside>
-      <main style={{ flex: 1, minWidth: 0 }}>
-        <header style={{ background: 'rgba(255,255,255,.92)', borderBottom: '1px solid var(--border)', padding: '20px 28px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+    <div className="app-shell">
+      <div className="app-frame">
+        <aside className="sidebar">
+          <div className="sidebar-brand">
+            <div className="brand-icon">G</div>
             <div>
-              <h1 style={{ margin: 0, fontSize: 30, lineHeight: 1.05, letterSpacing: '-0.04em' }}>{activePage}</h1>
-              <div style={{ marginTop: 6, color: 'var(--muted)', fontSize: 14 }}>Customer intelligence, loyalty, and operational journeys aligned to real support workflows.</div>
-            </div>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search customer, segment, order" style={{ width: 280, padding: '12px 14px', borderRadius: 16, border: '1px solid var(--border)', background: '#fff', outline: 'none' }} />
-              <button style={secondaryButton}>Export audience</button>
-              <button style={primaryButton}>Create journey</button>
+              <div className="brand-title">Gemer Flow</div>
+              <div className="brand-subtitle">Loyalty & Customer Studio</div>
             </div>
           </div>
-        </header>
-        <div style={{ padding: 28 }}>{renderPage()}</div>
-      </main>
+
+          <nav className="sidebar-nav">
+            {NAV.map((item) => {
+              const active = activePage === item;
+              return (
+                <button key={item} onClick={() => setActivePage(item)} className={`nav-button ${active ? 'active' : ''}`}>
+                  <span>{item}</span>
+                </button>
+              );
+            })}
+          </nav>
+
+          <div className="sidebar-footer-card">
+            <div className="footer-card-title">Product story</div>
+            <div className="footer-card-text">
+              Loyalty, service recovery, and customer context in one system for support, marketing, and retail teams.
+            </div>
+            <button onClick={() => setActivePage('Overview')} className="footer-card-button">Open overview</button>
+          </div>
+        </aside>
+
+        <main className="content-area">
+          <header className="topbar">
+            <div>
+              <h1 className="page-title">{activePage}</h1>
+              <div className="page-subtitle">Customer intelligence, loyalty, and operational journeys aligned to real support workflows.</div>
+            </div>
+            <div className="topbar-actions">
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search customer, segment, order" className="search-input" />
+              <button className="ghost-btn">Export audience</button>
+              <button className="primary-btn">Create journey</button>
+            </div>
+          </header>
+
+          <div className="content-wrap">
+            {renderPage()}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
